@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ENCODE 0 // -d 
-#define DECODE 1 // -r
+#include "../inc/constant.h"
 void help();
 
 // PARAMETRO 0: nombre del programa.
@@ -15,8 +14,8 @@ void help();
 int
 main(int argc, char * argv[]) {
 	int method, k, n;
-	char * filename;
-	FILE * image;
+	char * filename = NULL;
+	FILE * image = NULL;
 
 	if(argc < 6 || argc > 10) {
 		help();
@@ -64,38 +63,40 @@ main(int argc, char * argv[]) {
 	}
 	
 	if(argc > 6) {
-	      if(argc == 8) {
-			if(strcmp(argv[6], "-n") == 0) {
+		switch(argc) {
+			case 8:
+				if(strcmp(argv[6], "-n") == 0) {
+					n = atoi(argv[7]);
+					if(n < 3 || n > 8 || method == DECODE) {
+						help();
+						exit(EXIT_FAILURE);
+					}
+				} else if(strcmp(argv[6], "-dir") == 0) {
+					// SE GUARDA EL DIRECTORIO DE DONDE SE LEEN O DONDE SE ESCRIBEN LAS IMAGENES CON EL SECRETO argv[7]
+				} else {
+					help();
+					exit(EXIT_FAILURE);
+				}
+				break;
+			case 10:
+				if(strcmp(argv[6], "-n") != 0) {
+					help();
+					exit(EXIT_FAILURE);
+				} 
 				n = atoi(argv[7]);
 				if(n < 3 || n > 8 || method == DECODE) {
 					help();
 					exit(EXIT_FAILURE);
 				}
-			} else if(strcmp(argv[6], "-dir") == 0) {
-				// SE GUARDA EL DIRECTORIO DE DONDE SE LEEN O DONDE SE ESCRIBEN LAS IMAGENES CON EL SECRETO argv[7]
-			} else {
+				if(strcmp(argv[8], "-dir") != 0) {
+					help();
+					exit(EXIT_FAILURE);
+				}
+				break;
+			default:
 				help();
 				exit(EXIT_FAILURE);
-			}
-	      } else if(argc == 10) {
-			if(strcmp(argv[6], "-n") != 0) {
-				help();
-				exit(EXIT_FAILURE);
-			} 
-			n = atoi(argv[7]);
-			if(n < 3 || n > 8 || method == DECODE) {
-				help();
-				exit(EXIT_FAILURE);
-			}
-			if(strcmp(argv[8], "-dir") != 0) {
-				help();
-				exit(EXIT_FAILURE);
-			}
-			// SE GUARDA EL DIRECTORIO DE DONDE SE LEEN O DONDE SE ESCRIBEN LAS IMAGENES CON EL SECRETO argv[9]
-	      } else {
-			help();
-			exit(EXIT_FAILURE);
-	      }
+		}
 	} else {
 		// SE ELIGEN LOS PARAMETROS DEFAULT QUE DICE LA CONSIGNA
 		// SERIAN: EL N EN CASO DE QUE SE HAYA USADO -D Y EL DIRECTORIO ACTUAL PARA LAS IMAGENES
@@ -106,6 +107,11 @@ main(int argc, char * argv[]) {
 	
 	fclose(image);
 	return EXIT_SUCCESS;	
+
+	//TODO: Modularizar un poquito mas
+
+
+	
 }
 
 void
