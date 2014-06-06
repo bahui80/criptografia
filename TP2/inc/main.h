@@ -10,6 +10,7 @@
 #include "../inc/constants.h"
 #include "../inc/imageIO.h"
 #include "../inc/image.h"
+#include "../inc/tests.h"
 
 void help();
 int readFilesFromDirectory(char * directory, int n, Image secretImage, Image * shadowImages, int * error);

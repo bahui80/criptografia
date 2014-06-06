@@ -146,7 +146,7 @@ main(int argc, char * argv[]) {
 	/**
 	 *	TODO: SI ESTO PASO BIEN RECIEN ACA SE CREA LA IMAGEN EN CASO QUE HAYA QUE CREARLA
 	 */
-
+	checkImages(shadowImages, imagesRead);
 	return EXIT_SUCCESS;	
 
 	/**
