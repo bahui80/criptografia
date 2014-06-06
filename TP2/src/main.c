@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include "../inc/main.h"
 #include "../inc/constants.h"
-void help();
+#include "../inc/imageIO.h"
+#include "../inc/image.h"
 
 // PARAMETRO 0: nombre del programa.
 // PARAMETRO 1: -d, -r.
@@ -14,10 +16,12 @@ void help();
 
 int
 main(int argc, char * argv[]) {
-	int method, k, n = 0;
+	int method, k, n = 0, nAux, imagesRead;
 	char * filename = NULL;
 	FILE * image = NULL;
 	char * directory = NULL;
+	IMAGE secretImage = NULL;
+	IMAGE * shadowImages = calloc(8 + 1, sizeof(IMAGE));
 
 	if(argc < 6 || argc > 10) {
 		help();
@@ -48,6 +52,7 @@ main(int argc, char * argv[]) {
 			printf("No se encontró el archivo\n");
 			exit(EXIT_FAILURE);
 		}
+		fclose(image);
 	}
 
 	if(strcmp(argv[4],"-k") != 0) {
@@ -99,26 +104,32 @@ main(int argc, char * argv[]) {
 		}
 	}
 	
+	if(n != 0 && k > n) {
+		printf("El valor de k no puede ser mayor que n\n");
+		exit(EXIT_FAILURE);
+	}
 
+	nAux = n;
+	imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, secretImage, shadowImages);
+	if(nAux != 0 && imagesRead != nAux) {
+		printf("No hay la cantidad de imágenes ingresada por parámetro en el directorio\n");
+		exit(EXIT_FAILURE);
+	}
 	
-	// TODO: PONER VALOR DEFAULT SERIAN: EL N EN CASO DE QUE SE HAYA USADO -D 
-	
-	
-	readFilesFromDirectory(directory == NULL ? "." : directory, n);
 	// TODO: SI ESTO PASO BIEN RECIEN ACA SE CREA LA IMAGEN EN CASO QUE HAYA QUE CREARLA
-	
-	fclose(image);
+
 	return EXIT_SUCCESS;	
 
 	//TODO: Modularizar un poquito mas
 }
 
 int
-readFilesFromDirectory(char * directory, int n) {
+readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shadowImages) {
 	DIR * dir = NULL, * auxDir = NULL;
 	int imagesRead = 0;
 	char * fullPath = NULL;
 	struct dirent * file = NULL;
+	IMAGE shadowImage = NULL;
 	
 	if((dir = opendir(directory)) != NULL) {
 		while((file = readdir(dir)) != NULL && imagesRead < n) {
@@ -131,7 +142,8 @@ readFilesFromDirectory(char * directory, int n) {
 			if((auxDir = opendir(fullPath)) == NULL) {
 				// Con esto chequeo que lo que abri sea un archivo y no una carpeta
 				if (strstr(file->d_name, ".bmp") != NULL || strstr(file->d_name, ".BMP") != NULL) {
-					// TODO: CARGO LA IMAGEN ACA
+					shadowImage = loadImage(fullPath);
+					shadowImages[imagesRead] = shadowImage;					
 					imagesRead++;
 				}
 			} else {
