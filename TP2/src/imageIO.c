@@ -6,17 +6,18 @@
 
 Image
 loadImage(char * path, int * error) {
+	int fileSize, offset;
+	BYTE * header, * image;
+	Image imageStruct = NULL;
 	FILE * file = fopen(path, "rb");
 	if (file == NULL) {
 		*error = FILE_OPEN_ERROR;
 		return NULL;
 	}
-	int fileSize, offset;
-	BYTE * header, * image;
 	
-	fseek(file, 2, SEEK_CUR); // ME MUEVO 2 BYTES PARA LLEGAR AL TAMAÑO TOTAL DEL ARCHIVO
+	fseek(file, 2, SEEK_CUR); /* ME MUEVO 2 BYTES PARA LLEGAR AL TAMAÑO TOTAL DEL ARCHIVO */
 	fread(&fileSize,  sizeof(int), 1, file);
-	fseek(file, 4, SEEK_CUR); // ME MUEVO 4 BYTES Y LLEGO AL VALOR DEL OFFSET
+	fseek(file, 4, SEEK_CUR); /* ME MUEVO 4 BYTES Y LLEGO AL VALOR DEL OFFSET */
 	fread(&offset, sizeof(int), 1, file);
 	
 	rewind(file);
@@ -37,7 +38,7 @@ loadImage(char * path, int * error) {
 	fread(image, sizeof(BYTE), fileSize - offset, file);
 	
 
-	Image imageStruct = initialize(path, fileSize, offset, header, image, error);
+	imageStruct = initialize(path, fileSize, offset, header, image, error);
 	free(header);
 	free(image);
 	fclose(file);

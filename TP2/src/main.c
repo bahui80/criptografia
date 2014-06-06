@@ -1,18 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
 #include "../inc/main.h"
-#include "../inc/constants.h"
-#include "../inc/imageIO.h"
-#include "../inc/image.h"
 
-// PARAMETRO 0: nombre del programa.
-// PARAMETRO 1: -d, -r.
-// PARAMETRO 2: -secret imagen.
-// PARAMETRO 3: -k numero.
-// PARAMETRO 4 (opcional): -n numero.
-// PARAMETRO 5 (opcional): -dir directorio.
+/**
+ *	PARAMETRO 0: nombre del programa.
+ *	PARAMETRO 1: -d, -r.
+ *	PARAMETRO 2: -secret imagen.
+ *	PARAMETRO 3: -k numero.
+ *	PARAMETRO 4 (opcional): -n numero.
+ *	PARAMETRO 5 (opcional): -dir directorio.
+ */
 
 int
 main(int argc, char * argv[]) {
@@ -46,8 +41,12 @@ main(int argc, char * argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	filename = argv[3];
-	if(strstr(toLowerString(filename), BMP) == NULL) {
+	filename = toLowerString(argv[3], &error);
+	if (error != NO_ERROR) {
+		printError(error);
+		return EXIT_FAILURE;
+	}
+	if(strstr(filename, BMP) == NULL) {
 		error = BMP_FORMAT_ERROR;
 		printError(error);
 		return EXIT_FAILURE;
@@ -144,11 +143,15 @@ main(int argc, char * argv[]) {
 		return EXIT_FAILURE;
 	}
 	
-	// TODO: SI ESTO PASO BIEN RECIEN ACA SE CREA LA IMAGEN EN CASO QUE HAYA QUE CREARLA
+	/**
+	 *	TODO: SI ESTO PASO BIEN RECIEN ACA SE CREA LA IMAGEN EN CASO QUE HAYA QUE CREARLA
+	 */
 
 	return EXIT_SUCCESS;	
 
-	//TODO: Modularizar un poquito mas
+	/**
+	 *	TODO: Modularizar un poquito mas
+	 */
 }
 
 void
@@ -202,8 +205,14 @@ readFilesFromDirectory(char * directory, int n, Image secretImage, Image * shado
 			}
 			strncat(fullPath, file->d_name, strlen(file->d_name));
 			if((auxDir = opendir(fullPath)) == NULL) {
-				// Con esto chequeo que lo que abri sea un archivo y no una carpeta
-				if (strstr(toLowerString(file->d_name), BMP)) {
+				/**
+				 *	Con esto chequeo que lo que abri sea un archivo y no una carpeta
+				 */
+				char * d_name = toLowerString(file->d_name, error);
+				if (*error != NO_ERROR) {
+					return -1;
+				}
+				if (strstr(d_name, BMP)) {
 					shadowImage = loadImage(fullPath, error);
 					if (*error != NO_ERROR) {
 						closedir(dir);
@@ -217,19 +226,24 @@ readFilesFromDirectory(char * directory, int n, Image secretImage, Image * shado
 				closedir(auxDir);
 			}
 		}
+		closedir(dir);
+		free(fullPath);
 	} else {
 		*error = DIR_ERROR;
 		return -1;
 	}
-	closedir(dir);
-	free(fullPath);
+	return imagesRead;
 }
 
 char *
-toLowerString(char * string) {
+toLowerString(char * string, int * error) {
 	int i;	
 	char * out = calloc(strlen(string) + 1, sizeof(char));
-	
+	if (out == NULL) {
+		*error = CALLOC_ERROR;
+		return NULL;
+	}
+
 	for(i = 0; i < strlen(string); i++) {
 		out[i] = tolower(string[i]);		
 	}

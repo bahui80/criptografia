@@ -4,13 +4,13 @@
 #include "../inc/image.h"
 #include "../inc/constants.h"
 
-struct image_t {
+typedef struct image_t {
 	char * filename;
 	int fileSize;
 	int offset;
 	BYTE * header;
 	BYTE * image;
-};
+}image_t;
 
 Image
 initialize(char * filename, int fileSize, int offset, BYTE * header, BYTE * image, int * error) {

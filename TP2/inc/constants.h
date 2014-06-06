@@ -3,8 +3,8 @@
 
 #ifndef PROGRAM_OPTION
 enum {
-	DISTRIBUTE = 0, // -d
-	RECOVER = 1		// -r
+	DISTRIBUTE = 0, /* Means -d command*/
+	RECOVER = 1		/* Means -r command*/
 };
 #endif
 
@@ -41,7 +41,6 @@ enum {
 
 #ifndef IMAGE_EXTENSION
 #define BMP ".bmp"
-
 #endif
 
 #endif
