@@ -17,103 +17,131 @@
 int
 main(int argc, char * argv[]) {
 	int method, k, n = 0, nAux, imagesRead;
+	int error = NO_ERROR;
 	char * filename = NULL;
-	FILE * image = NULL;
 	char * directory = NULL;
-	IMAGE secretImage = NULL;
-	IMAGE * shadowImages = calloc(8 + 1, sizeof(IMAGE));
+	FILE * image = NULL;
+	Image secretImage = NULL;
+	Image * shadowImages = NULL;
 
 	if(argc < 6 || argc > 10) {
-		help();
-		exit(EXIT_FAILURE);
+		error = HELP_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 	
-	if(strcmp(argv[1],"-d") == 0) {
+	if(strcmp(argv[1], DISTRIBUTE_CMD) == 0) {
 		method = DISTRIBUTE; 
-	} else if(strcmp(argv[1],"-r") == 0) {
+	} else if(strcmp(argv[1], RECOVERY_CMD) == 0) {
 		method = RECOVER; 
 	} else {
-		help();
-		exit(EXIT_FAILURE);
+		error = HELP_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 
-	if(strcmp(argv[2],"-secret") != 0) {
-		help();
-		exit(EXIT_FAILURE);
+	if(strcmp(argv[2], SECRET) != 0) {
+		error = HELP_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 
 	filename = argv[3];
-	if(strstr(filename, ".bmp") == NULL && strstr(filename, ".BMP") == NULL) {
-		printf("El archivo debe tener extensión .bmp\n");
-		exit(EXIT_FAILURE);
+	if(strstr(toLower(filename), toLower(BMP)) == NULL) {
+		error = BMP_FORMAT_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
+
 	if(method == DISTRIBUTE) {
 		if((image = fopen(filename, "rb")) == NULL) {
-			printf("No se encontró el archivo\n");
-			exit(EXIT_FAILURE);
+			error = FILE_OPEN_ERROR;
+			printError(error);
+			return EXIT_FAILURE;
 		}
 		fclose(image);
 	}
 
-	if(strcmp(argv[4],"-k") != 0) {
-		help();
-		exit(EXIT_FAILURE);
+	if(strcmp(argv[4], K_VALUE) != 0) {
+		error = HELP_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 
 	k =  atoi(argv[5]);
 	if(k != 2 && k != 3) {
-		help();
-		exit(EXIT_FAILURE);
+		error = HELP_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 	
 	if(argc > 6) {
 		switch(argc) {
 			case 8:
-				if(strcmp(argv[6], "-n") == 0) {
+				if(strcmp(argv[6], N_VALUE) == 0) {
 					n = atoi(argv[7]);
 					if(n < 3 || n > 8 || method == RECOVER) {
-						help();
-						exit(EXIT_FAILURE);
+						error = HELP_ERROR;
+					printError(error);
+						return EXIT_FAILURE;
 					}
-				} else if(strcmp(argv[6], "-dir") == 0) {
+				} else if(strcmp(argv[6], DIR_VALUE) == 0) {
 					directory = argv[7];
 				} else {
-					help();
-					exit(EXIT_FAILURE);
+					error = HELP_ERROR;
+					printError(error);
+					return EXIT_FAILURE;
 				}
 				break;
 			case 10:
-				if(strcmp(argv[6], "-n") != 0) {
-					help();
-					exit(EXIT_FAILURE);
+				if(strcmp(argv[6], N_VALUE != 0) {
+					error = HELP_ERROR;
+					printError(error);
+					return EXIT_FAILURE;
 				}
 				n = atoi(argv[7]);
 				if(n < 3 || n > 8 || method == RECOVER) {
-					help();
-					exit(EXIT_FAILURE);
+					error = HELP_ERROR;
+					printError(error);
+					return EXIT_FAILURE;
 				}
-				if(strcmp(argv[8], "-dir") != 0) {
-					help();
-					exit(EXIT_FAILURE);
+				if(strcmp(argv[8], DIR_VALUE) != 0) {
+					error = HELP_ERROR;
+					printError(error);
+					return EXIT_FAILURE;
 				}
 				directory = argv[9];
 				break;
 			default:
-				help();
-				exit(EXIT_FAILURE);
+				error = HELP_ERROR;
+				printError(error);
+				return EXIT_FAILURE;
 		}
 	}
 	
 	if(n != 0 && k > n) {
-		printf("El valor de k no puede ser mayor que n\n");
-		exit(EXIT_FAILURE);
+		error = K_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 
 	nAux = n;
-	imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, secretImage, shadowImages);
+	Image * shadowImages = calloc(8 + 1, sizeof(struct image_t));
+
+	if (shadowImages == NULL) {
+		error = CALLOC_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
+	}
+	imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, secretImage, shadowImages, &error);
+	if (error != NO_ERROR) {
+		printError(error);
+		return EXIT_FAILURE;
+	}
 	if(nAux != 0 && imagesRead != nAux) {
-		printf("No hay la cantidad de imágenes ingresada por parámetro en el directorio\n");
-		exit(EXIT_FAILURE);
+		error = AMOUNT_IMAGE_ERROR;
+		printError(error);
+		return EXIT_FAILURE;
 	}
 	
 	// TODO: SI ESTO PASO BIEN RECIEN ACA SE CREA LA IMAGEN EN CASO QUE HAYA QUE CREARLA
@@ -123,26 +151,65 @@ main(int argc, char * argv[]) {
 	//TODO: Modularizar un poquito mas
 }
 
+void
+printError(int error) {
+	switch(error) {
+		case MALLOC_ERROR:
+		case CALLOC_ERROR:
+			printf("No hay mas memoria disponible\n");
+			break;
+		case FILE_OPEN_ERROR:
+			printf("El archivo no existe o no se ha encontrado\n");
+			break;
+		case BMP_FORMAT_ERROR:
+			printf("La extension del archivo debe ser .bmp\n");
+			break;
+		case HELP_ERROR:
+			help();
+			break;
+		case AMOUNT_IMAGE_ERROR:
+			printf("No hay la cantidad de imágenes ingresada por parámetro en el directorio\n");
+			break;
+		case K_ERROR:
+			printf("El valor de \'K\' no puede ser mayor que el valor de \'N\'\n");
+			break;
+		case DIR_ERROR:
+			printf("El directorio ingresado no existe\n");
+			break;
+		default:
+			printf("Error desconocido\n");
+	}
+}
+
 int
-readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shadowImages) {
+readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shadowImages, int * error) {
 	DIR * dir = NULL, * auxDir = NULL;
 	int imagesRead = 0;
 	char * fullPath = NULL;
 	struct dirent * file = NULL;
-	IMAGE shadowImage = NULL;
+	Image shadowImage = NULL;
 	
 	if((dir = opendir(directory)) != NULL) {
 		while((file = readdir(dir)) != NULL && imagesRead < n) {
-			fullPath = calloc(strlen(file -> d_name) + strlen(directory) + 2, sizeof(char));
+			fullPath = calloc(strlen(file->d_name) + strlen(directory) + 2, sizeof(char));
+			if (fullPath == NULL) {
+				*error = CALLOC_ERROR;
+				return -1;
+			}
 			strncat(fullPath, directory, strlen(directory));
 			if(directory[strlen(directory) - 1] != '/') {
 				strncat(fullPath, "/", 1);			
 			}
-			strncat(fullPath, file -> d_name, strlen(file -> d_name));
+			strncat(fullPath, file->d_name, strlen(file->d_name));
 			if((auxDir = opendir(fullPath)) == NULL) {
 				// Con esto chequeo que lo que abri sea un archivo y no una carpeta
-				if (strstr(file->d_name, ".bmp") != NULL || strstr(file->d_name, ".BMP") != NULL) {
-					shadowImage = loadImage(fullPath);
+				if (strstr(toLower(file->d_name), toLower(".bmp"))) {
+					shadowImage = loadImage(fullPath, error);
+					if (*error != NO_ERROR) {
+						closedir(dir);
+						free(fullPath);
+						return -1
+					}
 					shadowImages[imagesRead] = shadowImage;					
 					imagesRead++;
 				}
@@ -151,7 +218,7 @@ readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shado
 			}
 		}
 	} else {
-		printf("El directorio ingresado no existe\n");
+		*error = DIR_ERROR;
 		return -1;
 	}
 	closedir(dir);

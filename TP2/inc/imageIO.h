@@ -1,9 +1,10 @@
-#ifndef __IMAGEIO_H__
-#define __IMAGEIO_H__
+#ifndef __IMAGE_IO_H__
+#define __IMAGE_IO_H__
 
 #include "../inc/image.h"
+#include "../inc/constant.h"
 
-IMAGE loadImage(char * path);
+Image loadImage(char * path, int * error);
 
 #endif
 
