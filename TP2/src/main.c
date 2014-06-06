@@ -32,7 +32,7 @@ main(int argc, char * argv[]) {
 	
 	if(strcmp(argv[1], DISTRIBUTE_CMD) == 0) {
 		method = DISTRIBUTE; 
-	} else if(strcmp(argv[1], RECOVERY_CMD) == 0) {
+	} else if(strcmp(argv[1], RECOVER_CMD) == 0) {
 		method = RECOVER; 
 	} else {
 		error = HELP_ERROR;
@@ -47,7 +47,7 @@ main(int argc, char * argv[]) {
 	}
 
 	filename = argv[3];
-	if(strstr(toLower(filename), toLower(BMP)) == NULL) {
+	if(strstr(toLowerString(filename), BMP) == NULL) {
 		error = BMP_FORMAT_ERROR;
 		printError(error);
 		return EXIT_FAILURE;
@@ -94,7 +94,7 @@ main(int argc, char * argv[]) {
 				}
 				break;
 			case 10:
-				if(strcmp(argv[6], N_VALUE != 0) {
+				if(strcmp(argv[6], N_VALUE) != 0) {
 					error = HELP_ERROR;
 					printError(error);
 					return EXIT_FAILURE;
@@ -126,7 +126,7 @@ main(int argc, char * argv[]) {
 	}
 
 	nAux = n;
-	Image * shadowImages = calloc(8 + 1, sizeof(struct image_t));
+	shadowImages = calloc(8 + 1, sizeof(Image));
 
 	if (shadowImages == NULL) {
 		error = CALLOC_ERROR;
@@ -182,7 +182,7 @@ printError(int error) {
 }
 
 int
-readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shadowImages, int * error) {
+readFilesFromDirectory(char * directory, int n, Image secretImage, Image * shadowImages, int * error) {
 	DIR * dir = NULL, * auxDir = NULL;
 	int imagesRead = 0;
 	char * fullPath = NULL;
@@ -203,12 +203,12 @@ readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shado
 			strncat(fullPath, file->d_name, strlen(file->d_name));
 			if((auxDir = opendir(fullPath)) == NULL) {
 				// Con esto chequeo que lo que abri sea un archivo y no una carpeta
-				if (strstr(toLower(file->d_name), toLower(".bmp"))) {
+				if (strstr(toLowerString(file->d_name), BMP)) {
 					shadowImage = loadImage(fullPath, error);
 					if (*error != NO_ERROR) {
 						closedir(dir);
 						free(fullPath);
-						return -1
+						return -1;
 					}
 					shadowImages[imagesRead] = shadowImage;					
 					imagesRead++;
@@ -223,6 +223,18 @@ readFilesFromDirectory(char * directory, int n, IMAGE secretImage, IMAGE * shado
 	}
 	closedir(dir);
 	free(fullPath);
+}
+
+char *
+toLowerString(char * string) {
+	int i;	
+	char * out = calloc(strlen(string) + 1, sizeof(char));
+	
+	for(i = 0; i < strlen(string); i++) {
+		out[i] = tolower(string[i]);		
+	}
+	
+	return out;
 }
 
 void

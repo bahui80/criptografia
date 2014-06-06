@@ -20,26 +20,27 @@ enum {
 	BMP_FORMAT_ERROR,
 	HELP_ERROR,
 	K_ERROR,
-	DIR_ERROR
-}
+	DIR_ERROR,
+	AMOUNT_IMAGE_ERROR
+};
 #endif
 
 #ifndef BOOLEAN
-typedef TRUE 1
-typedef FALSE !TRUE
+#define TRUE 1
+#define FALSE !TRUE
 #endif
 
 #ifndef PROGRAM_PARAMETERS
-typedef DISTRIBUTE_CMD = "-d";
-typedef RECOVER_CMD = '-r';
-typedef SECRET = "-secret";
-typedef K_VALUE = "-k";
-typedef N_VALUE = "-n";
-typedef DIR_VALUE = "-dir";
+#define DISTRIBUTE_CMD "-d"
+#define RECOVER_CMD "-r"
+#define SECRET "-secret"
+#define K_VALUE "-k"
+#define N_VALUE "-n"
+#define DIR_VALUE "-dir"
 #endif
 
 #ifndef IMAGE_EXTENSION
-typedef BMP = ".bmp";
+#define BMP ".bmp"
 
 #endif
 

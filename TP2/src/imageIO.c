@@ -11,7 +11,7 @@ loadImage(char * path, int * error) {
 		*error = FILE_OPEN_ERROR;
 		return NULL;
 	}
-	int fileSize, offset, error;
+	int fileSize, offset;
 	BYTE * header, * image;
 	
 	fseek(file, 2, SEEK_CUR); // ME MUEVO 2 BYTES PARA LLEGAR AL TAMAÑO TOTAL DEL ARCHIVO
@@ -37,7 +37,7 @@ loadImage(char * path, int * error) {
 	fread(image, sizeof(BYTE), fileSize - offset, file);
 	
 
-	Image imageStruct = initialize(path, fileSize, offset, header, image, &error);
+	Image imageStruct = initialize(path, fileSize, offset, header, image, error);
 	free(header);
 	free(image);
 	fclose(file);

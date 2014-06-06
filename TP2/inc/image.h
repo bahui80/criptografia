@@ -10,5 +10,6 @@ int getOffset(Image image);
 BYTE * getHeader(Image image);
 BYTE * getImage(Image image);
 char * getFilename(Image image);
+void freeImage(Image image);
 
 #endif
