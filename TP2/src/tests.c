@@ -24,7 +24,6 @@ checkImages(Image * shadowImages, int quantity) {
 		newFilename = calloc(strlen("image") + 2, sizeof(char));
 		strcpy(newFilename, "image");
 		strcat (newFilename, numbers[i]);
-		printf("%s\n", newFilename);
 		file = fopen(newFilename,"wb");
 		fwrite(getHeader(shadowImages[i]), sizeof(BYTE), getOffset(shadowImages[i]), file);
 		fwrite(getImage(shadowImages[i]), sizeof(BYTE), getFilesize(shadowImages[i]) - getOffset(shadowImages[i]), file);
