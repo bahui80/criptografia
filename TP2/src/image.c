@@ -87,3 +87,8 @@ char *
 getFilename(Image image) {
 	return image->filename;
 }
+
+void
+setImageInIndex(Image image, char value, int index) {
+	image->image[index] = value;
+} 

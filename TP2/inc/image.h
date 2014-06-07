@@ -11,5 +11,6 @@ BYTE * getHeader(Image image);
 BYTE * getImage(Image image);
 char * getFilename(Image image);
 void freeImage(Image image);
+void setImageInIndex(Image image, char value, int index);
 
 #endif
