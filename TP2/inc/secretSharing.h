@@ -10,6 +10,7 @@
 #include "lib.h"
 #include "image.h"
 
+int distributeInOneImage(Image secretImage, Image outputImage, int amountOfBytes, int k);
 int getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k);
 int getBi(char * b_string, int bytes, int from);
 
