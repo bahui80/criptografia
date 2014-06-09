@@ -92,3 +92,12 @@ void
 setImageInIndex(Image image, char value, int index) {
 	image->image[index] = value;
 } 
+
+Image
+clone(Image image, int * error) {
+	Image newImage = initialize(image->filename, image->fileSize, image->offset, image->header, image->image, error);
+	if (*error != NO_ERROR) {
+		return NULL;
+	}
+	return newImage;
+}

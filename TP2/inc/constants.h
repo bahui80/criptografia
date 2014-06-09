@@ -43,4 +43,6 @@ enum {
 #define BMP ".bmp"
 #endif
 
+#define SHADOW_IMAGES 8
+
 #endif

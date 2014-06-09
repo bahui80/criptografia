@@ -125,7 +125,7 @@ main(int argc, char * argv[]) {
 	}
 
 	nAux = n;
-	shadowImages = calloc(8 + 1, sizeof(Image));
+	shadowImages = calloc(SHADOW_IMAGES, sizeof(Image));
 
 	if (shadowImages == NULL) {
 		error = CALLOC_ERROR;
@@ -159,7 +159,9 @@ main(int argc, char * argv[]) {
 	/**
 	 *	TODO: SE LLAMA AL METODO DISTRIBUTE O RECOVER SEGUN CORRESPONDA
 	 */		
-	checkImages(shadowImages, imagesRead);
+
+	/*checkImages(shadowImages, imagesRead); Uncomment if we want to test*/
+	
 	return EXIT_SUCCESS;	
 
 	/**
@@ -232,7 +234,13 @@ readFilesFromDirectory(char * directory, int n, Image * shadowImages, int * erro
 						free(fullPath);
 						return -1;
 					}
-					shadowImages[imagesRead] = shadowImage;					
+					shadowImages[imagesRead] = clone(shadowImage, error);
+					if (*error != NO_ERROR) {
+						closedir(dir);
+						free(fullPath);
+						free(shadowImage);
+						return -1;
+					}
 					imagesRead++;
 				}
 			} else {

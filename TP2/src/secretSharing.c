@@ -70,14 +70,11 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k) {
 		ai = (andB[i] >> auxAmountBytes) * selectedSecretBytes[i]; //TODO: Check if ai = 0 or greater than 251
 		a += ai;
 	}
-	printf("A = %d\n", a);
 	b = a % 251;
-	printf("B = %d\n", b);
 	char * b_string = byte_to_binary(b);
 	if (b_string == NULL) {
 		return CALLOC_ERROR;
 	}
-	printf("b_2 = %s\n", b_string);
 	int length = strlen(b_string);
 
 	for (i = 0; i < k - 1; i++) {
@@ -96,6 +93,5 @@ getBi(char * b_string, int bytes, int from) {
 		bi = (int) (b_string[from + i] - '0');
 		result += pow(2, bytes - i - 1) * bi;
 	}
-	printf("Print %s\n", byte_to_binary(result));
 	return result;
 }

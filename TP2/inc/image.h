@@ -12,5 +12,6 @@ BYTE * getImage(Image image);
 char * getFilename(Image image);
 void freeImage(Image image);
 void setImageInIndex(Image image, char value, int index);
+Image clone(Image image, int * error);
 
 #endif
