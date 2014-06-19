@@ -44,5 +44,6 @@ enum {
 #endif
 
 #define SHADOW_IMAGES 8
+#define EIGHT_BITS 8
 
 #endif

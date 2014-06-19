@@ -39,11 +39,11 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k) {
 	int amountOfAi = 255, amountOfLastAi = 255;
 	int * andB, auxAmount, auxAmountBytes, b, ai;
 
-	if (8 % k == 0) {
-		lastBytes = 8 / k;
+	if (EIGHT_BITS % k == 0) {
+		lastBytes = EIGHT_BITS / k;
 		bBytes = lastBytes;
 	} else {
-		lastBytes = 8 % k;
+		lastBytes = EIGHT_BITS % k;
 		bBytes = k;
 	}
 	for (i = 0; i < lastBytes; i++) {
@@ -76,13 +76,72 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k) {
 		return CALLOC_ERROR;
 	}
 	int length = strlen(b_string);
-
-	for (i = 0; i < k - 1; i++) {
-		selectedOutputBytes[i] = (char) (andB[i] + getBi(b_string, bBytes, bBytes * i));
+	int * auxSelectedOutputBytes = calloc(sizeof(int), k);
+	if (auxSelectedOutputBytes == NULL) {
+		return CALLOC_ERROR;
 	}
-	selectedOutputBytes[k - 1] = (char) (andB[k - 1] + getBi(b_string, lastBytes, i * bBytes) + p);
+	for (i = 0; i < k - 1; i++) {
+		auxSelectedOutputBytes[i] = andB[i] + getBi(b_string, bBytes, bBytes * i);
+		printf("auxSelectedOutputBytes[i] = %d\n", auxSelectedOutputBytes[i]);
+	}
+	auxSelectedOutputBytes[k - 1] = andB[k - 1] + getBi(b_string, lastBytes, i * bBytes);
+	printf("auxSelectedOutputBytes[k - 1] = %d\n", auxSelectedOutputBytes[k - 1]);
 
+	char * valueForHast = calloc(sizeof(char), (EIGHT_BITS * k) + 1);
+	for (i = 0; i < k - 1; i++) {
+		strcat(valueForHast, byte_to_binary(auxSelectedOutputBytes[i]));
+	}
+	char * z = byte_to_binary(auxSelectedOutputBytes[k-1]);
+	strncat(valueForHast, z, EIGHT_BITS - lastBytes - 1);
+	strcat(valueForHast, z + EIGHT_BITS - lastBytes);
+	strcat(valueForHast, "0");
+	printf("valueForHast = %s\n", valueForHast);
+
+ 	unsigned char * md = malloc(MD5_DIGEST_LENGTH); 
+ 	if (md == NULL) {
+ 		return MALLOC_ERROR;
+ 	}
+ 	unsigned char * hash = MD5(valueForHast, strlen(valueForHast), md);
+
+	int newP = xorFromHashWrapper(hash, &error, length);
+	if (error != NO_ERROR) {
+		return error;
+	}
+	printf("result = %d\n", newP);
+	for (i = 0; i < k - 1; i++) {
+		selectedOutputBytes[i] = auxSelectedOutputBytes[i];
+	}
+	selectedOutputBytes[k - 1] = auxSelectedOutputBytes[k - 1] + (p * newP);
+
+ 
 	return error;
+}
+
+int
+xorFromHashWrapper(unsigned char * hash, int * error, int length) {
+	int i;
+	char * hashInBits = calloc(sizeof(char), 128);
+	if (hashInBits == NULL) {
+		*error = CALLOC_ERROR;
+		return -1;
+	}
+
+	for (i = 0; i < length; i++) {
+		strcat(hashInBits, byte_to_binary((int)hash[i]));
+	}
+	printf("hashInBits = %s\n", hashInBits);
+	return xorFromHash(hashInBits);
+}
+
+int
+xorFromHash(char * hash) {
+	unsigned int result = hash[0] - '0';
+	int i;
+	int length = strlen(hash);
+	for (i = 1; i < length; i++) {
+		result = result ^ (hash[i] - '0');
+	}
+	return result;
 }
 
 int
