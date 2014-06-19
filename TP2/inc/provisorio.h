@@ -9,5 +9,6 @@
 Image recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error);
 int detVertical3x3(int ** mat);
 int detHorizontal3x3(int ** mat);
+int calculate_inverse(int b);
 
 #endif
