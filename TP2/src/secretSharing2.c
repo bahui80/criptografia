@@ -66,6 +66,9 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				// 	}
 				// 	printf("\n");
 				// }
+				if (mat[auxRow][auxCol] == 251) {
+					mat[auxRow][auxCol] = -1;
+				}
 				mat[auxRow][auxCol]++;
 				int auxB = 0;
 				for (j = 0; j < k; j++) {
@@ -183,7 +186,13 @@ calculateOutputValues(int * values, int * error, int k) {
 		return NULL;
 	}
 	for (i = 0; i < k - 1; i++) {
+		// if (values[i] == 0) {
+		// 	values[i]++;
+		// }
 		auxSelectedOutputBytes[i] = (values[i] << bBytes) + getBi(b_string, bBytes, bBytes * i);
+		// if ((values[i] << bBytes) == 0) {
+		// 	printf("values:%d\n", values[i], i);
+		// }
 		// if (auxSelectedOutputBytes[i] == 0) {
 		// 	printf("0\n");
 		// }

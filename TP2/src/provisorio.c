@@ -57,18 +57,9 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 			BYTE * image = getImage(shadowImages[shadowImagesIndex]);
 			int auxB = 0;
 			for (index = 0; index < k - 1; index++) {
-				// if (sizeIndex == 2) {
-				// 	printf("Image %d value = %X\n", shadowImagesIndex, image[sizeIndex + index]);
-				// }
 				if (k == 3) {
 					mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfAi) >> 3);
 				} else if (k == 2) {
-					// if (sizeIndex == 2) {
-					// 	printf("((((int) image[sizeIndex + index]) & amountOfAi) >> 4): %d\n", ((((int) image[sizeIndex + index]) & amountOfAi) >> 4));
-					// 	printf("and: %s\n", byte_to_binary((((int) image[sizeIndex + index]) & amountOfAi)));
-					// 	printf("amount: %s\n", byte_to_binary(amountOfAi));
-					// 	printf("binary: %s\n", byte_to_binary((int) image[sizeIndex + index]));
-					// }
 					mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfAi) >> 4);
 				}
 				auxB += ((int) image[sizeIndex + index]) & amountOfBi;
@@ -82,13 +73,6 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 					}
 				}
 			}
-			// if (sizeIndex == 2) {
-			// 	printf("Image %d value = %X\n", shadowImagesIndex, image[sizeIndex + index]);
-			// 	printf("((((int) image[sizeIndex + index]) & amountOfLastAi) >> 5): %d\n", ((((int) image[sizeIndex + index]) & amountOfLastAi) >> 5));
-			// 	printf("and: %s\n", byte_to_binary((((int) image[sizeIndex + index]) & amountOfLastAi)));
-			// 	printf("amount: %s\n", byte_to_binary(amountOfLastAi));
-			// 	printf("binary: %s\n", byte_to_binary((int) image[sizeIndex + index]));
-			// }
 			if (k == 3) {
 				mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfLastAi) >> 3);
 			} else if (k == 2) {

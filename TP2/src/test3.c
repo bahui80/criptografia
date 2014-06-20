@@ -9,30 +9,26 @@ main(int argc, char ** argv) {
 	int k = 3, i;
 	int error = NO_ERROR;
 	int n = 3;
-	char * directory = "../recover";
+	char * directory = "../compare";
 	Image * shadowImages = calloc(SHADOW_IMAGES, sizeof(Image));
 
 	if (shadowImages == NULL) {
 		error = CALLOC_ERROR;
 		return EXIT_FAILURE;
 	}
-	Image secretImage = loadImage("../Salma.bmp", &error);
+	// Image secretImage = loadImage("../Salma.bmp", &error);
+	int amount = 0;
 	int imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, shadowImages, &error);
-	printf("imagesRead %d\n", imagesRead);
-	printf("Size: %d\n", getOffset(shadowImages[0]));
-		// int i = 0;
-	
-	error = distributeInOneImage(secretImage, shadowImages, getFilesize(secretImage) - getOffset(secretImage), k, n);
-	for (i = 0; i < n; i++) {
-		char * fileName = calloc(sizeof(char), 20);
-		sprintf(fileName, "./output%d.bmp", i);
-		saveImage(shadowImages[i], fileName, &error);
+	for (i = 0; i < getFilesize(shadowImages[0]) - getOffset(shadowImages[0]); i++) {
+		if (getImage(shadowImages[0])[i] != getImage(shadowImages[1])[i]) {
+			// setImageInIndex(shadowImages[0], getImage(shadowImages[1])[i], i);
+			printf("diff: %X - %X at %d\n", getImage(shadowImages[0])[i], getImage(shadowImages[1])[i], i);
+			amount++;
+		}
 	}
-	Image originalImage = recoverSecretImage(shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, &error);
-
-
-	saveImage(originalImage, "./originalSalma.bmp", &error);
-	// printf("error = %d\n", error);
+	// saveImage(shadowImages[0], "./originalSalma2.bmp", &error);
+	printf("Amount: %d\n", amount);
+	return EXIT_SUCCESS;
 	
 }
 
