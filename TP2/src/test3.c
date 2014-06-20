@@ -8,7 +8,7 @@ int
 main(int argc, char ** argv) {
 	int k = 3, i;
 	int error = NO_ERROR;
-	int n = 3;
+	int n = 6;
 	char * directory = "../compare";
 	Image * shadowImages = calloc(SHADOW_IMAGES, sizeof(Image));
 
@@ -20,12 +20,12 @@ main(int argc, char ** argv) {
 	int amount = 0;
 	int imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, shadowImages, &error);
 	for (i = 0; i < getFilesize(shadowImages[0]) - getOffset(shadowImages[0]); i++) {
-		if (getImage(shadowImages[0])[i] != getImage(shadowImages[1])[i]) {
+		if (getImage(shadowImages[4])[i] != getImage(shadowImages[5])[i]) {
 			// setImageInIndex(shadowImages[0], getImage(shadowImages[1])[i], i);
 			
-			if (abs(getImage(shadowImages[0])[i] - getImage(shadowImages[1])[i]) > 200) {
-				printf("diff: %X - %X at %d\n", getImage(shadowImages[0])[i], getImage(shadowImages[1])[i], getOffset(shadowImages[0]) + i);
-				printf("diff: %d at %d\n", getImage(shadowImages[0])[i] - getImage(shadowImages[1])[i], i);
+			if (abs(getImage(shadowImages[4])[i] - getImage(shadowImages[5])[i]) > 50) {
+				printf("diff: %X - %X at %d\n", getImage(shadowImages[4])[i], getImage(shadowImages[5])[i], getOffset(shadowImages[0]) + i);
+				printf("diff: %d at %d\n", getImage(shadowImages[4])[i] - getImage(shadowImages[5])[i], i);
 				amount++;
 			}
 		}

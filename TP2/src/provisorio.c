@@ -162,9 +162,16 @@ valuesFork2(int ** mat, int k, int * error) {
 	}
 	int deltaY = det2x2(mat2);
 	values[1] = (deltaY * inverse) % 251;
-	values[2] = deltaS;
-	values[3] = deltaX;
-	values[4] = deltaY;
+	// values[2] = deltaS;
+	// values[3] = deltaX;
+	// values[4] = deltaY;
+	if (deltaS == 0) {
+		globalS++;
+	} else if (deltaX == 0) {
+		globalX++;
+	} else if (deltaY == 0) {
+		globalY++;
+	}
 	return values;
 }
 

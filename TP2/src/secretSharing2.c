@@ -44,30 +44,29 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				mat[index][col] = values[col];
 			}
 		}
-		// printf("Mat\n");
-		// for (row = 0; row < n; row++) {
-		// 	for (col = 0; col < k + 1; col++) {
-		// 		printf("%d -", mat[row][col]);
-		// 	}
-		// 	printf("\n");
-		// }
+		
 		int auxRow = 0, auxCol = 0;
 		int rta;
 		do {
 			
-			rta = detVertical3x3(mat);
+			if (k == 3) {
+				rta = detVertical3x3(mat);
+			} else {
+				rta = det2x2(mat);
+			}
 			// printf("rta: %d\n", rta);
 			if (rta == 0) {
 				// flag = 1;
 				// printf("Mat\n");
-				// for (row = 0; row < n; row++) {
-				// 	for (col = 0; col < k + 1; col++) {
-				// 		printf("%d -", mat[row][col]);
-				// 	}
-				// 	printf("\n");
-				// }
-				if (mat[auxRow][auxCol] == 31) {
-					mat[auxRow][auxCol] -= 4;
+
+				if (k == 3) {
+					if (mat[auxRow][auxCol] == 31) {
+						mat[auxRow][auxCol] -= 4;
+					}
+				} else if (k == 2) {
+					if (mat[auxRow][auxCol] == 15) {
+						mat[auxRow][auxCol] -= 2;
+					}
 				}
 				mat[auxRow][auxCol]++;
 				int auxB = 0;
@@ -75,17 +74,41 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 					auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
 					// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
 				}
+
 				mat[auxRow][k] = (auxB % 251);
-				if (auxCol == k - 1) {
+				if (k == 3) {
+					if (auxCol == k - 1) {
 					if (auxRow == n - 2) {
 						auxRow = 0;
 						auxCol = 0;
 					} else {
 						auxRow++;
 					}
+					} else {
+						auxCol++;
+					}
 				} else {
-					auxCol++;
+					if (auxCol == k - 1) {
+					if (auxRow == n - 1) {
+						auxRow = 0;
+						auxCol = 0;
+					} else {
+						auxRow++;
+					}
+					} else {
+						auxCol++;
+					}
 				}
+				// if (auxCol == k - 1) {
+				// 	if (auxRow == n - 1) {
+				// 		auxRow = 0;
+				// 		auxCol = 0;
+				// 	} else {
+				// 		auxRow++;
+				// 	}
+				// } else {
+				// 	auxCol++;
+				// }
 				// printf("Mat\n");
 				// for (row = 0; row < n; row++) {
 				// 	for (col = 0; col < k + 1; col++) {
