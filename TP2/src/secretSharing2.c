@@ -12,13 +12,13 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		for (j = 0; j < k; j++) {
 			selectedSecretBytes[j] = getImage(secretImage)[i + j];
 		}
-		int ** mat = calloc(sizeof(int * ), n);
+		int ** mat = calloc(sizeof(int * ), k + 1);
 		if (mat == NULL) {
 			free(selectedSecretBytes);
 			return CALLOC_ERROR;
 		}
-		for (j = 0; j < n; j++) {
-			mat[j] = calloc(sizeof(int), k + 1);
+		for (j = 0; j < k + 1; j++) {
+			mat[j] = calloc(sizeof(int), n);
 			if (mat[j] == NULL) {
 				free(selectedSecretBytes);
 				free(mat);
@@ -38,10 +38,11 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				return error;
 			}
 			for (col = 0; col < k + 1; col++) {
-				// if ( values[col] == 0) {
-				// 	values[col]++;
-				// }
-				mat[index][col] = values[col];
+				if (col < k && values[col] == 0) {
+					values[col]++;
+				}
+				// printf("col_ %d\n", col);
+				mat[col][index] = values[col];
 			}
 		}
 		// printf("Mat\n");
@@ -72,20 +73,21 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				mat[auxRow][auxCol]++;
 				int auxB = 0;
 				for (j = 0; j < k; j++) {
-					auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
+					auxB += (mat[j][auxCol] * selectedSecretBytes[j]);
 					// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
 				}
 				mat[auxRow][k] = (auxB % 251);
-				if (auxCol == k - 1) {
-					if (auxRow == n - 2) {
-						auxRow = 0;
+				if (auxCol == n - 1) {
+						if (auxRow == k - 1) {
+							number++;
+							auxRow = 0;
+						} else {
+							auxRow++;
+						}
 						auxCol = 0;
 					} else {
-						auxRow++;
+						auxCol++;
 					}
-				} else {
-					auxCol++;
-				}
 				// printf("Mat\n");
 				// for (row = 0; row < n; row++) {
 				// 	for (col = 0; col < k + 1; col++) {

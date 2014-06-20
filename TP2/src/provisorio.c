@@ -1,4 +1,5 @@
 #include "../inc/provisorio.h"
+int global = 0;
 
 Image
 recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) {
@@ -105,7 +106,7 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 			setImageInIndex(originalImage, (char) values[i], i + sizeIndex);
 		}
 	}
-
+	printf("global: %d\n", global);
 	return originalImage;	
 }
 
@@ -166,6 +167,9 @@ valuesFork3(int ** mat, int k, int * error) {
 		return NULL;
 	}
 	int deltaS = detVertical3x3(mat);
+	if (deltaS == 0) {
+		global++;
+	}
 	int inverse = calculate_inverse(deltaS);
 	int ** mat2 = calloc(sizeof(int *), k);
 	if (mat2 == NULL) {
@@ -206,6 +210,9 @@ valuesFork3(int ** mat, int k, int * error) {
 	}
 	int deltaZ = detHorizontal3x3(mat2);
 	values[2] = (deltaZ * inverse) % 251;
+	if (deltaX == 0 || deltaY == 0 || deltaZ == 0) {
+		global++;
+	}
 	return values;
 }
 
