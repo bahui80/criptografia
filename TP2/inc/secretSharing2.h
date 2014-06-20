@@ -11,10 +11,11 @@
 #include "lib.h"
 #include "image.h"
 
-int distributeInOneImage(Image secretImage, Image outputImage, int amountOfBytes, int k);
-int getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k);
+int distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int k, int n);
+int * getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k, int * error);
 int getBi(char * b_string, int bytes, int from);
 int xorFromHashWrapper(unsigned char * hash, int * error, int length);
 int xorFromHash(char * hash);
+int * calculateOutputValues(int * values, int * error, int k) ;
 
 #endif
