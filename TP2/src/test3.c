@@ -22,7 +22,7 @@ main(int argc, char ** argv) {
 	for (i = 0; i < getFilesize(shadowImages[0]) - getOffset(shadowImages[0]); i++) {
 		if (getImage(shadowImages[0])[i] != getImage(shadowImages[1])[i]) {
 			// setImageInIndex(shadowImages[0], getImage(shadowImages[1])[i], i);
-			printf("diff: %X - %X at %d\n", getImage(shadowImages[0])[i], getImage(shadowImages[1])[i], i);
+			printf("diff: %X - %X at %d\n", getImage(shadowImages[0])[i], getImage(shadowImages[1])[i], getOffset(shadowImages[0]) + i);
 			amount++;
 		}
 	}
