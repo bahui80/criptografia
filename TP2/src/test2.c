@@ -16,7 +16,7 @@ main(int argc, char ** argv) {
 		error = CALLOC_ERROR;
 		return EXIT_FAILURE;
 	}
-	Image secretImage = loadImage("../Salma.bmp", &error);
+	Image secretImage = loadImage("../Albert.bmp", &error);
 	int imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, shadowImages, &error);
 	printf("imagesRead %d\n", imagesRead);
 	printf("Size: %d\n", getOffset(shadowImages[0]));

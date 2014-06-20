@@ -1,5 +1,9 @@
 #include "../inc/provisorio.h"
-int global = 0;
+
+int globalS = 0;
+int globalX = 0;
+int globalY = 0;
+int globalZ = 0;
 
 Image
 recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) {
@@ -80,6 +84,9 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 				mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfLastAi) >> 5);
 			}
 			auxB += ((int) image[sizeIndex + index]) & amountOfLastBi;
+			// if (auxB >= 251) {
+			// 	printf("auxB: %d\n", auxB);
+			// }
 			mat[shadowImagesIndex][++index] = auxB % 251;
 
 		}
@@ -106,7 +113,11 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 			setImageInIndex(originalImage, (char) values[i], i + sizeIndex);
 		}
 	}
-	printf("global: %d\n", global);
+	printf("globalS: %d\n", globalS);
+	printf("globalX: %d\n", globalX);
+	printf("globalY: %d\n", globalY);
+	printf("globalZ: %d\n", globalZ);
+
 	return originalImage;	
 }
 
@@ -167,9 +178,6 @@ valuesFork3(int ** mat, int k, int * error) {
 		return NULL;
 	}
 	int deltaS = detVertical3x3(mat);
-	if (deltaS == 0) {
-		global++;
-	}
 	int inverse = calculate_inverse(deltaS);
 	int ** mat2 = calloc(sizeof(int *), k);
 	if (mat2 == NULL) {
@@ -210,8 +218,14 @@ valuesFork3(int ** mat, int k, int * error) {
 	}
 	int deltaZ = detHorizontal3x3(mat2);
 	values[2] = (deltaZ * inverse) % 251;
-	if (deltaX == 0 || deltaY == 0 || deltaZ == 0) {
-		global++;
+	if (deltaS == 0) {
+		globalS++;
+	} else if (deltaX == 0) {
+		globalX++;
+	} else if (deltaY == 0) {
+		globalY++;
+	} else if (deltaZ == 0) {
+		globalZ++;
 	}
 	return values;
 }
