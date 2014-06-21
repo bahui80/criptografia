@@ -58,7 +58,6 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 			if (rta == 0) {
 				// flag = 1;
 				// printf("Mat\n");
-
 				if (k == 3) {
 					if (mat[auxRow][auxCol] == 31) {
 						mat[auxRow][auxCol] -= 4;
@@ -70,11 +69,17 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				}
 				mat[auxRow][auxCol]++;
 				int auxB = 0;
+				int prevB = mat[auxRow][k];
 				for (j = 0; j < k; j++) {
 					auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
 					// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
 				}
-				mat[auxRow][k] = (auxB % 251);
+				if ((auxB % 251 < 3) && prevB > 245) {
+					// printf("Entra por aca %d  nuevo %d\n", prevB, auxB % 251);
+				} else {
+					mat[auxRow][k] = (auxB % 251);
+				}
+				
 				if (k == 3) {
 					if (auxCol == k - 1) {
 					if (auxRow == n - 2) {
@@ -121,6 +126,11 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		for (j = 0; j < n; j++) {
 			int * newValues = calculateOutputValues(mat[j], &error, k);
 			for (col = 0; col < k; col++) {
+				// if (newValues[col] < 5) {
+				// 	newValues[col] = 250;
+				// 	// printf("newValues[col]: %d selectedSecretBytes[col]: %d\n", newValues[col], selectedSecretBytes[col]);
+				// }
+				// printf("newValues[col]: %d selectedSecretBytes[col]: %d\n", newValues[col], selectedSecretBytes[col]);
 				setImageInIndex(shadows[j], newValues[col], i + col);
 			}
 		}
@@ -195,6 +205,9 @@ calculateOutputValues(int * values, int * error, int k) {
 
 	p = pow(2, lastBytes);
 	char * b_string = byte_to_binary(values[k]);
+	if (values[k] == 0) {
+		printf("Entra\n");
+	}
 	if (b_string == NULL) {
 		*error = CALLOC_ERROR;
 		return NULL;
@@ -244,7 +257,7 @@ calculateOutputValues(int * values, int * error, int k) {
 	if (*error != NO_ERROR) {
 		return NULL;
 	}
-	auxSelectedOutputBytes[k - 1] = auxSelectedOutputBytes[k - 1] + (p * newP);
+	auxSelectedOutputBytes[k - 1] = auxSelectedOutputBytes[k - 1] + (p * 0);
 	return auxSelectedOutputBytes;
 }
 
