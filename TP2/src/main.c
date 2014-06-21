@@ -151,10 +151,16 @@ main(int argc, char * argv[]) {
 			printError(error);
 			return EXIT_FAILURE;
 		}
+		error = distributeInOneImage(secretImage, shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, n);
+		int i;
+		for (i = 0; i < n; i++) {
+			char * files = calloc(sizeof(char), 20);
+			sprintf(files, "./shadows_%d.bmp", i);
+			saveImage(shadowImages[i], files, &error);
+		}
 	} else {
-		/**
-		 *	TODO: SI EL METODO ES RECOVER EL SECRET IMAGE SE TIENE QUE CREAR CON UNA ESTRUCTURA VACIA QUE SE VA A IR LLENANDO A 			 *	MEDIDA QUE CORRA EL ALGORITMO. AL FINAL DE LA EJECUCION, RECIEN AHI SE GUARDA A DISCO LA IMAGEN. COMO LA IMAGEN A 			 *	CREAR TIENE QUE TENER UN HEADER LO QUE ME DIJO ANA ES QUE SE COPIE EL HEADER DE ALGUNA DE LAS IMAGENES QUE SE 			 *	LEVANTARON YA DEL DIRECTORIO EN ESTA IMAGEN QUE VA A SER DE SALIDA
-		 */		
+		Image originalImage = recoverSecretImage(shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, &error);
+		saveImage(originalImage, "./originalSalma.bmp", &error);	
 	}
 	/**
 	 *	TODO: SE LLAMA AL METODO DISTRIBUTE O RECOVER SEGUN CORRESPONDA

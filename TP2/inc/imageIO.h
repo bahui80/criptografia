@@ -5,6 +5,7 @@
 #include "../inc/constants.h"
 
 Image loadImage(char * path, int * error);
+void saveImage(Image image, char * path, int * error);
 
 #endif
 

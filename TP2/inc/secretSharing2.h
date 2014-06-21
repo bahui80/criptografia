@@ -16,6 +16,6 @@ int * getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int
 int getBi(char * b_string, int bytes, int from);
 int xorFromHashWrapper(unsigned char * hash, int * error, int length);
 int xorFromHash(char * hash);
-int * calculateOutputValues(int * values, int * error, int k) ;
+int * calculateOutputValues(int * values, int * error, int k);
 
 #endif

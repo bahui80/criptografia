@@ -12,4 +12,5 @@ int detHorizontal3x3(int ** mat);
 int calculate_inverse(int b);
 int  det2x2(int ** mat);
 
+
 #endif

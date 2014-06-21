@@ -1,22 +1,19 @@
 #include "../inc/provisorio.h"
 #include "../inc/secretSharing2.h"
 
-void
-saveImage(Image image, char * path, int * error);
-
 int
 main(int argc, char ** argv) {
 	int k = 3, i;
 	int error = NO_ERROR;
 	int n = 3;
-	char * directory = "../recover";
+	char * directory = "../images";
 	Image * shadowImages = calloc(SHADOW_IMAGES, sizeof(Image));
 
 	if (shadowImages == NULL) {
 		error = CALLOC_ERROR;
 		return EXIT_FAILURE;
 	}
-	Image secretImage = loadImage("../Salma.bmp", &error);
+	Image secretImage = loadImage("../Albert.bmp", &error);
 	int imagesRead = readFilesFromDirectory(directory == NULL ? "." : directory, n == 0 ? 8 : n, shadowImages, &error);
 	printf("imagesRead %d\n", imagesRead);
 	printf("Size: %d\n", getOffset(shadowImages[0]));
@@ -32,7 +29,6 @@ main(int argc, char ** argv) {
 
 
 	saveImage(originalImage, "./originalSalma.bmp", &error);
-	// printf("error = %d\n", error);
 	
 }
 
@@ -107,22 +103,4 @@ toLowerString(char * string, int * error) {
 	}
 	
 	return out;
-}
-
-void
-saveImage(Image image, char * path, int * error) { // EL PATH ES DONDE SE VA A GUARDAR EL ARCHIVO, ESO SE RECIBIO POR PARAMETRO
-	int offset = getOffset(image);
-	int fileSize = getFilesize(image);
-	FILE * file;
-
-	file = fopen(path, "wb");
-	if(file == NULL) {
-		*error = CALLOC_ERROR; // ACA PONER EL ERROR QUE CORRESPONDA
-	}	
-
-	fwrite(getHeader(image), sizeof(BYTE), offset, file);
-	fwrite(getImage(image), sizeof(BYTE), fileSize - offset, file);
-
-	fclose(file);
-	*error = NO_ERROR;
 }

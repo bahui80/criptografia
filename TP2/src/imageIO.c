@@ -49,3 +49,21 @@ loadImage(char * path, int * error) {
 	
 	return imageStruct;	
 }
+
+void
+saveImage(Image image, char * path, int * error) { // EL PATH ES DONDE SE VA A GUARDAR EL ARCHIVO, ESO SE RECIBIO POR PARAMETRO
+	int offset = getOffset(image);
+	int fileSize = getFilesize(image);
+	FILE * file;
+
+	file = fopen(path, "wb");
+	if(file == NULL) {
+		*error = CALLOC_ERROR; // ACA PONER EL ERROR QUE CORRESPONDA
+	}	
+
+	fwrite(getHeader(image), sizeof(BYTE), offset, file);
+	fwrite(getImage(image), sizeof(BYTE), fileSize - offset, file);
+
+	fclose(file);
+	*error = NO_ERROR;
+}

@@ -1,11 +1,14 @@
-CFLAGS = -Wall -ansi -pedantic -O -Wuninitialized
+CFLAGS = -lcrypto 
 
 
-SECRET_SHARING=../bin/SecretSharing
+SECRET_SHARING=SecretSharing
 
 TARGET1=main
 TARGET2=image
 TARGET3=imageIO
+TARGET4=lib
+TARGET5=provisorio
+TARGET6=secretSharing2
 
 CREATE_SECRET_SHARING=create_secret_sharing
 REMAKE_SECRET_SHARING=remake_secret_sharing
@@ -20,7 +23,7 @@ help:
 	@echo "3) clean_secret_sharing   ----- Borra el ejecutable de sercret sharing ubicado en ../bin"
 
 $(CREATE_SECRET_SHARING):	$(TARGET1).c $(TARGET2).c $(TARGET3).c
-	@gcc $(CFLAGS) -o $(SECRET_SHARING) $(TARGET1).c $(TARGET2).c $(TARGET3).c
+	@gcc $(CFLAGS) -o $(SECRET_SHARING) $(TARGET1).c $(TARGET2).c $(TARGET3).c $(TARGET4).c $(TARGET5).c $(TARGET6).c
 	@echo "------------Secret sharing programm created in ../bin/SecretSharing----------------"
 
 $(CLEAN_SECRET_SHARING):

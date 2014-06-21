@@ -7,10 +7,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <dirent.h>
-#include "../inc/constants.h"
-#include "../inc/imageIO.h"
-#include "../inc/image.h"
-#include "../inc/tests.h"
+#include "constants.h"
+#include "imageIO.h"
+#include "image.h"
+#include "tests.h"
+#include "provisorio.h"
+#include "secretSharing2.h"
+
 
 void help();
 int readFilesFromDirectory(char * directory, int n, Image * shadowImages, int * error);
