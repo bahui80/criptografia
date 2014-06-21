@@ -110,6 +110,10 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 		// }
 		for(i = 0; i < k; i++) {
 			// printf("i + sizeIndex: %d values = %d\n", i + sizeIndex, values[i]);
+			// if (values[i] < 0) {
+			// 	// printf("jaja");
+			// 	values[i] = 250;
+			// }
 			setImageInIndex(originalImage, (char) values[i], i + sizeIndex);
 		}
 	}

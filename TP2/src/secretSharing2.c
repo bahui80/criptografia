@@ -74,7 +74,6 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 					auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
 					// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
 				}
-
 				mat[auxRow][k] = (auxB % 251);
 				if (k == 3) {
 					if (auxCol == k - 1) {
@@ -195,7 +194,6 @@ calculateOutputValues(int * values, int * error, int k) {
 	}
 
 	p = pow(2, lastBytes);
-
 	char * b_string = byte_to_binary(values[k]);
 	if (b_string == NULL) {
 		*error = CALLOC_ERROR;
