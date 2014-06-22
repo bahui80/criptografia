@@ -13,7 +13,7 @@ int
 main(int argc, char * argv[]) {
 	int method, k, n = 0, nAux, imagesRead;
 	int error = NO_ERROR, i;
-	char * filename = NULL;
+	char * filename = NULL, * filenameAux = NULL;
 	char * directory = NULL;
 	FILE * image = NULL;
 	Image secretImage = NULL;
@@ -41,12 +41,13 @@ main(int argc, char * argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	filename = toLowerString(argv[3], &error);
+	filename = argv[3];
+	filenameAux = toLowerString(argv[3], &error);
 	if (error != NO_ERROR) {
 		printError(error);
 		return EXIT_FAILURE;
 	}
-	if(strstr(filename, BMP) == NULL) {
+	if(strstr(filenameAux, BMP) == NULL) {
 		error = BMP_FORMAT_ERROR;
 		printError(error);
 		return EXIT_FAILURE;
@@ -151,9 +152,9 @@ main(int argc, char * argv[]) {
 			printError(error);
 			return EXIT_FAILURE;
 		}
-		error = distributeInOneImage(secretImage, shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, n);
+		error = distributeInOneImage(secretImage, shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, imagesRead);
 		printf("Se crearon las siguientes imagenes con el secreto en ellas, en el directorio actual:\n");
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < imagesRead; i++) {
 			char * files = calloc(sizeof(char), 20);
 			sprintf(files, "./shadows_%d.bmp", i);
 			printf("Sombra %d: %s\n", i, files);

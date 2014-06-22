@@ -1,4 +1,4 @@
-CFLAGS = -Wall -ansi -pedantic -O -Wuninitialized -lcrypto
+CFLAGS = -Wall -ansi -pedantic -O -Wuninitialized -lcrypto -lm
 
 
 SECRET_SHARING=SecretSharing
