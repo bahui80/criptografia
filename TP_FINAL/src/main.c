@@ -143,6 +143,12 @@ main(int argc, char * argv[]) {
 		printError(error);
 		return EXIT_FAILURE;
 	}
+	for (i = 1; i < imagesRead; i++) {
+		if (getFilesize(shadowImages[0]) != getFilesize(shadowImages[i])) {
+			printf("Todas las imagenes deben tener el mismo tamaño\n");
+			return EXIT_FAILURE;
+		}
+	}
 	
 
 
