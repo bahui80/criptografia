@@ -160,7 +160,7 @@ main(int argc, char * argv[]) {
 		}
 	} else {
 		Image originalImage = recoverSecretImage(shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, &error);
-		saveImage(originalImage, "./originalSalma.bmp", &error);	
+		saveImage(originalImage, filename, &error);	
 	}
 	/**
 	 *	TODO: SE LLAMA AL METODO DISTRIBUTE O RECOVER SEGUN CORRESPONDA
