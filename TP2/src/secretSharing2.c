@@ -46,84 +46,6 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		}
 		checkLiForK3(mat, k, n);
 		
-		// int auxRow = 0, auxCol = 0;
-		// int rta;
-		// do {
-			
-		// 	if (k == 3) {
-		// 		rta = detVertical3x3(mat);
-		// 	} else {
-		// 		rta = det2x2(mat);
-		// 	}
-		// 	// printf("rta: %d\n", rta);
-		// 	if (rta == 0) {
-		// 		// flag = 1;
-		// 		// printf("Mat\n");
-		// 		if (k == 3) {
-		// 			if (mat[auxRow][auxCol] == 31) {
-		// 				mat[auxRow][auxCol] -= 4;
-		// 			}
-		// 		} else if (k == 2) {
-		// 			if (mat[auxRow][auxCol] == 15) {
-		// 				mat[auxRow][auxCol] -= 2;
-		// 			}
-		// 		}
-		// 		mat[auxRow][auxCol]++;
-		// 		int auxB = 0;
-		// 		int prevB = mat[auxRow][k];
-		// 		for (j = 0; j < k; j++) {
-		// 			auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
-		// 			// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
-		// 		}
-		// 		if ((auxB % 251 < 3) && prevB > 245) {
-		// 			// printf("Entra por aca %d  nuevo %d\n", prevB, auxB % 251);
-		// 		} else {
-		// 			mat[auxRow][k] = (auxB % 251);
-		// 		}
-				
-		// 		if (k == 3) {
-		// 			if (auxCol == k - 1) {
-		// 			if (auxRow == n - 2) {
-		// 				auxRow = 0;
-		// 				auxCol = 0;
-		// 			} else {
-		// 				auxRow++;
-		// 			}
-		// 			} else {
-		// 				auxCol++;
-		// 			}
-		// 		} else {
-		// 			if (auxCol == k - 1) {
-		// 			if (auxRow == n - 1) {
-		// 				auxRow = 0;
-		// 				auxCol = 0;
-		// 			} else {
-		// 				auxRow++;
-		// 			}
-		// 			} else {
-		// 				auxCol++;
-		// 			}
-		// 		}
-		// 		// if (auxCol == k - 1) {
-		// 		// 	if (auxRow == n - 1) {
-		// 		// 		auxRow = 0;
-		// 		// 		auxCol = 0;
-		// 		// 	} else {
-		// 		// 		auxRow++;
-		// 		// 	}
-		// 		// } else {
-		// 		// 	auxCol++;
-		// 		// }
-		// 		// printf("Mat\n");
-		// 		// for (row = 0; row < n; row++) {
-		// 		// 	for (col = 0; col < k + 1; col++) {
-		// 		// 		printf("%d -", mat[row][col]);
-		// 		// 	}
-		// 		// 	printf("\n");
-		// 		// }
-		// 		// return NO_ERROR;
-		// 	}
-		// } while (rta == 0);
 		for (j = 0; j < n; j++) {
 			int s, auxiliarB = 0;
 			for (s = 0; s < k; s++) {
@@ -198,6 +120,7 @@ checkLiForK3(int ** matrix, int k, int n) {
                   // }
                   // mat[row][col]++;
                 	if (k == 3) {
+                		// printf("auxRow %d auxCol %d\n");
 						if (mat[auxRow][auxCol] == 31) {
 							mat[auxRow][auxCol] -= 4;
 						}
@@ -216,8 +139,8 @@ checkLiForK3(int ** matrix, int k, int n) {
 					// }
 				
 					if (k == 3) {
-						if (auxCol == k - 1) {
-							if (auxRow == n - 2) {
+						if (auxCol == 2) {
+							if (auxRow == 2) {
 								auxRow = 0;
 								auxCol = 0;
 							} else {
@@ -234,6 +157,7 @@ checkLiForK3(int ** matrix, int k, int n) {
                 matrix[j][matIndex1] = mat[1][matIndex1];
                 matrix[l][matIndex1] = mat[2][matIndex1];
               }
+              free(mat);
               l++;
             }
           }
@@ -305,9 +229,9 @@ calculateOutputValues(int * values, int * error, int k) {
 
 	p = pow(2, lastBytes);
 	char * b_string = byte_to_binary(values[k]);
-	if (values[k] == 0) {
-		printf("Entra\n");
-	}
+	// if (values[k] == 0) {
+	// 	printf("Entra\n");
+	// }
 	if (b_string == NULL) {
 		*error = CALLOC_ERROR;
 		return NULL;
