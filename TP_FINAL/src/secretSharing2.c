@@ -105,7 +105,7 @@ checkLiForK2(int ** matrix, int k, int n) {
 						auxCol++;
 					}
                 }
-              } while (rta == 0 && count < 100);
+              } while (rta == 0 && count < 200);
    				for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
    					matrix[i][matIndex1] = mat[0][matIndex1];
    					matrix[j][matIndex1] = mat[1][matIndex1];
@@ -167,7 +167,7 @@ checkLiForK3(int ** matrix, int k, int n) {
 						auxCol++;
 					}
                 }
-              } while (rta == 0 && count < 100);
+              } while (rta == 0 && count < 300);
               for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
                 matrix[i][matIndex1] = mat[0][matIndex1];
                 matrix[j][matIndex1] = mat[1][matIndex1];
