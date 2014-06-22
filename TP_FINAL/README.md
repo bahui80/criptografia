@@ -37,3 +37,14 @@ arg5 = -dir directorio: el directorio donde se encuentran las imágenes en las q
 #### Recuperación
 
 <code>./SecretSharing -r -secret ../recover2.bmp -k 3 -dir ../shadows</code>
+
+#### Imagenes de ejemplos
+
+- dimen: 600x600 o 300x300
+- k_number: k2 o k3
+
+En la carpeta images/{dimen}/paraOcultar/{k_number}/ se encuentran las imagenes donde se quiere ocultar el secreto ubicado en images/{dimen}/secreto/{k_number}.
+
+Luego en la carpeta shadows/{dimen}/{k_number} se pueden encontrar las shadows obtenidas para las imagenes mencionadas anteriormente.
+
+Por ultimo en la carpeta recover/{dimen}/{k_number} se encuentra la imagen recuperada con las shadows obtenidas
