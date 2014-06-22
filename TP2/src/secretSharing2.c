@@ -44,86 +44,92 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 				mat[index][col] = values[col];
 			}
 		}
+		checkLiForK3(mat, k, n);
 		
-		int auxRow = 0, auxCol = 0;
-		int rta;
-		do {
+		// int auxRow = 0, auxCol = 0;
+		// int rta;
+		// do {
 			
-			if (k == 3) {
-				rta = detVertical3x3(mat);
-			} else {
-				rta = det2x2(mat);
-			}
-			// printf("rta: %d\n", rta);
-			if (rta == 0) {
-				// flag = 1;
-				// printf("Mat\n");
-				if (k == 3) {
-					if (mat[auxRow][auxCol] == 31) {
-						mat[auxRow][auxCol] -= 4;
-					}
-				} else if (k == 2) {
-					if (mat[auxRow][auxCol] == 15) {
-						mat[auxRow][auxCol] -= 2;
-					}
-				}
-				mat[auxRow][auxCol]++;
-				int auxB = 0;
-				int prevB = mat[auxRow][k];
-				for (j = 0; j < k; j++) {
-					auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
-					// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
-				}
-				if ((auxB % 251 < 3) && prevB > 245) {
-					// printf("Entra por aca %d  nuevo %d\n", prevB, auxB % 251);
-				} else {
-					mat[auxRow][k] = (auxB % 251);
-				}
+		// 	if (k == 3) {
+		// 		rta = detVertical3x3(mat);
+		// 	} else {
+		// 		rta = det2x2(mat);
+		// 	}
+		// 	// printf("rta: %d\n", rta);
+		// 	if (rta == 0) {
+		// 		// flag = 1;
+		// 		// printf("Mat\n");
+		// 		if (k == 3) {
+		// 			if (mat[auxRow][auxCol] == 31) {
+		// 				mat[auxRow][auxCol] -= 4;
+		// 			}
+		// 		} else if (k == 2) {
+		// 			if (mat[auxRow][auxCol] == 15) {
+		// 				mat[auxRow][auxCol] -= 2;
+		// 			}
+		// 		}
+		// 		mat[auxRow][auxCol]++;
+		// 		int auxB = 0;
+		// 		int prevB = mat[auxRow][k];
+		// 		for (j = 0; j < k; j++) {
+		// 			auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
+		// 			// printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
+		// 		}
+		// 		if ((auxB % 251 < 3) && prevB > 245) {
+		// 			// printf("Entra por aca %d  nuevo %d\n", prevB, auxB % 251);
+		// 		} else {
+		// 			mat[auxRow][k] = (auxB % 251);
+		// 		}
 				
-				if (k == 3) {
-					if (auxCol == k - 1) {
-					if (auxRow == n - 2) {
-						auxRow = 0;
-						auxCol = 0;
-					} else {
-						auxRow++;
-					}
-					} else {
-						auxCol++;
-					}
-				} else {
-					if (auxCol == k - 1) {
-					if (auxRow == n - 1) {
-						auxRow = 0;
-						auxCol = 0;
-					} else {
-						auxRow++;
-					}
-					} else {
-						auxCol++;
-					}
-				}
-				// if (auxCol == k - 1) {
-				// 	if (auxRow == n - 1) {
-				// 		auxRow = 0;
-				// 		auxCol = 0;
-				// 	} else {
-				// 		auxRow++;
-				// 	}
-				// } else {
-				// 	auxCol++;
-				// }
-				// printf("Mat\n");
-				// for (row = 0; row < n; row++) {
-				// 	for (col = 0; col < k + 1; col++) {
-				// 		printf("%d -", mat[row][col]);
-				// 	}
-				// 	printf("\n");
-				// }
-				// return NO_ERROR;
-			}
-		} while (rta == 0);
+		// 		if (k == 3) {
+		// 			if (auxCol == k - 1) {
+		// 			if (auxRow == n - 2) {
+		// 				auxRow = 0;
+		// 				auxCol = 0;
+		// 			} else {
+		// 				auxRow++;
+		// 			}
+		// 			} else {
+		// 				auxCol++;
+		// 			}
+		// 		} else {
+		// 			if (auxCol == k - 1) {
+		// 			if (auxRow == n - 1) {
+		// 				auxRow = 0;
+		// 				auxCol = 0;
+		// 			} else {
+		// 				auxRow++;
+		// 			}
+		// 			} else {
+		// 				auxCol++;
+		// 			}
+		// 		}
+		// 		// if (auxCol == k - 1) {
+		// 		// 	if (auxRow == n - 1) {
+		// 		// 		auxRow = 0;
+		// 		// 		auxCol = 0;
+		// 		// 	} else {
+		// 		// 		auxRow++;
+		// 		// 	}
+		// 		// } else {
+		// 		// 	auxCol++;
+		// 		// }
+		// 		// printf("Mat\n");
+		// 		// for (row = 0; row < n; row++) {
+		// 		// 	for (col = 0; col < k + 1; col++) {
+		// 		// 		printf("%d -", mat[row][col]);
+		// 		// 	}
+		// 		// 	printf("\n");
+		// 		// }
+		// 		// return NO_ERROR;
+		// 	}
+		// } while (rta == 0);
 		for (j = 0; j < n; j++) {
+			int s, auxiliarB = 0;
+			for (s = 0; s < k; s++) {
+				auxiliarB += selectedSecretBytes[s] * mat[j][s];
+			}
+			mat[j][k] = auxiliarB % 251; 
 			int * newValues = calculateOutputValues(mat[j], &error, k);
 			for (col = 0; col < k; col++) {
 				// if (newValues[col] < 5) {
@@ -142,6 +148,100 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		// return NO_ERROR;
 	}
 	return NO_ERROR;
+}
+
+void
+checkLiForK3(int ** matrix, int k, int n) {
+	int i, j, l, matIndex1, matIndex2;
+    i = 0;
+    while (i < n) {
+      j = 0;
+      while(j < n) {
+        if (j == i) {
+          ++j;
+        } else {
+          l = 0;
+          while (l < n) {
+            if (l == i || l == j) {
+              ++l;
+            } else {
+              int ** mat = calloc(sizeof(int), k + 2);
+              for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
+                mat[matIndex1] = calloc(sizeof(int), k + 2);
+              }
+              // for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
+              //   for(matIndex2 = 0; matIndex2 < k; matIndex2++) {
+              //     printf("matIndex1: %d matIndex2: %d\n", matIndex1, matIndex2);
+              //       mat[matIndex1][matIndex2] = 3;
+              //    }
+                 
+              // }
+              for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
+                mat[0][matIndex1] = matrix[i][matIndex1];
+                mat[1][matIndex1] = matrix[j][matIndex1];
+                mat[2][matIndex1] = matrix[l][matIndex1];
+              }
+              int rta;
+              int auxRow = 0, auxCol = 0;
+              int count = 0;
+              do {
+              	// printf("Entra\n");
+                rta = detVertical3x3(mat);
+                if (rta == 0) {
+                	count++;
+                  // int row = getRandom(k);
+                  // int col = getRandom(k);
+                  // if (mat[row][col] == 31) {
+                  // 	mat[row][col] -= 4;
+                  //   // row = getRandom(k);
+                  //   // col = getRandom(k);
+                  // }
+                  // mat[row][col]++;
+                	if (k == 3) {
+						if (mat[auxRow][auxCol] == 31) {
+							mat[auxRow][auxCol] -= 4;
+						}
+					} 
+					mat[auxRow][auxCol]++;
+					int auxB = 0;
+					// int prevB = mat[auxRow][k];
+					// for (j = 0; j < k; j++) {
+					// 	auxB += (mat[auxRow][j] * selectedSecretBytes[j]);
+					// // printf("selectedSecretBytes: %d\n", selectedSecretBytes[j]);
+					// }
+					// if ((auxB % 251 < 3) && prevB > 245) {
+					// // printf("Entra por aca %d  nuevo %d\n", prevB, auxB % 251);
+					// } else {
+					// 	mat[auxRow][k] = (auxB % 251);
+					// }
+				
+					if (k == 3) {
+						if (auxCol == k - 1) {
+							if (auxRow == n - 2) {
+								auxRow = 0;
+								auxCol = 0;
+							} else {
+								auxRow++;
+							}
+						} else {
+							auxCol++;
+						}
+					}
+                }
+              } while (rta == 0 && count < 100);
+              for(matIndex1 = 0; matIndex1 < k; matIndex1++) {
+                matrix[i][matIndex1] = mat[0][matIndex1];
+                matrix[j][matIndex1] = mat[1][matIndex1];
+                matrix[l][matIndex1] = mat[2][matIndex1];
+              }
+              l++;
+            }
+          }
+          j++;
+        }
+      }
+      i++;
+    }
 }
 
 int *
@@ -298,4 +398,11 @@ getBi(char * b_string, int bytes, int from) {
 		result += pow(2, bytes - i - 1) * bi;
 	}
 	return result;
+}
+
+int
+getRandom(int k) {
+  srand(time(NULL));
+  int randomnumber;
+    return rand() % k;
 }
