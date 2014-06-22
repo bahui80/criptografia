@@ -11,7 +11,7 @@
 #include "imageIO.h"
 #include "image.h"
 #include "tests.h"
-#include "provisorio.h"
+#include "recoverSecret.h"
 #include "secretSharing2.h"
 
 

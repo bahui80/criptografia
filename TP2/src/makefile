@@ -1,4 +1,4 @@
-CFLAGS = -lcrypto 
+CFLAGS = -Wall -ansi -pedantic -O -Wuninitialized -lcrypto
 
 
 SECRET_SHARING=SecretSharing
@@ -7,7 +7,7 @@ TARGET1=main
 TARGET2=image
 TARGET3=imageIO
 TARGET4=lib
-TARGET5=provisorio
+TARGET5=recoverSecret
 TARGET6=secretSharing2
 
 CREATE_SECRET_SHARING=create_secret_sharing

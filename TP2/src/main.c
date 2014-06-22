@@ -12,7 +12,7 @@
 int
 main(int argc, char * argv[]) {
 	int method, k, n = 0, nAux, imagesRead;
-	int error = NO_ERROR;
+	int error = NO_ERROR, i;
 	char * filename = NULL;
 	char * directory = NULL;
 	FILE * image = NULL;
@@ -152,7 +152,6 @@ main(int argc, char * argv[]) {
 			return EXIT_FAILURE;
 		}
 		error = distributeInOneImage(secretImage, shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, n);
-		int i;
 		printf("Se crearon las siguientes imagenes con el secreto en ellas, en el directorio actual:\n");
 		for (i = 0; i < n; i++) {
 			char * files = calloc(sizeof(char), 20);
@@ -163,6 +162,7 @@ main(int argc, char * argv[]) {
 	} else {
 		Image originalImage = recoverSecretImage(shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, &error);
 		saveImage(originalImage, filename, &error);	
+		printf("Se recupero el secreto en %s\n", filename);
 	}
 
 	return EXIT_SUCCESS;	

@@ -1,5 +1,5 @@
-#ifndef __PROVISORIO_H__
-#define __PROVISORIO_H__
+#ifndef __RECOVER_SECRET_H__
+#define __RECOVER_SECRET_H__
 
 #include "constants.h"
 #include "main.h"

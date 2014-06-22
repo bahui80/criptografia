@@ -51,14 +51,14 @@ loadImage(char * path, int * error) {
 }
 
 void
-saveImage(Image image, char * path, int * error) { // EL PATH ES DONDE SE VA A GUARDAR EL ARCHIVO, ESO SE RECIBIO POR PARAMETRO
+saveImage(Image image, char * path, int * error) {
 	int offset = getOffset(image);
 	int fileSize = getFilesize(image);
 	FILE * file;
 
 	file = fopen(path, "wb");
 	if(file == NULL) {
-		*error = CALLOC_ERROR; // ACA PONER EL ERROR QUE CORRESPONDA
+		*error = CALLOC_ERROR;
 	}	
 
 	fwrite(getHeader(image), sizeof(BYTE), offset, file);

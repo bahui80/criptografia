@@ -3,7 +3,7 @@
 int
 distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int k, int n) {
 	int error = NO_ERROR;
-	int i, j, index, col, row;
+	int i, j, index, col, ** mat, * values, * newValues, s, auxiliarB;
 	for (i = 0; i < amountOfBytes; i += k) {
 		BYTE * selectedSecretBytes = calloc(sizeof(BYTE), k);
 		if (selectedSecretBytes == NULL) {
@@ -12,7 +12,7 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		for (j = 0; j < k; j++) {
 			selectedSecretBytes[j] = getImage(secretImage)[i + j];
 		}
-		int ** mat = calloc(sizeof(int * ), n);
+		mat = calloc(sizeof(int * ), n);
 		if (mat == NULL) {
 			free(selectedSecretBytes);
 			return CALLOC_ERROR;
@@ -33,7 +33,7 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 			for (j = 0; j < k; j++) {
 				selectedOutputBytes[j] = getImage(shadows[index])[i + j];
 			}
-			int * values = getOutputBytes(selectedSecretBytes, selectedOutputBytes, k, &error);
+			values = getOutputBytes(selectedSecretBytes, selectedOutputBytes, k, &error);
 			if (error != NO_ERROR) {
 				return error;
 			}
@@ -48,12 +48,12 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 		}
 		
 		for (j = 0; j < n; j++) {
-			int s, auxiliarB = 0;
+			auxiliarB = 0;
 			for (s = 0; s < k; s++) {
 				auxiliarB += selectedSecretBytes[s] * mat[j][s];
 			}
 			mat[j][k] = auxiliarB % 251; 
-			int * newValues = calculateOutputValues(mat[j], &error, k);
+			newValues = calculateOutputValues(mat[j], &error, k);
 			for (col = 0; col < k; col++) {
 				setImageInIndex(shadows[j], newValues[col], i + col);
 			}
@@ -64,7 +64,7 @@ distributeInOneImage(Image secretImage, Image * shadows, int amountOfBytes, int 
 
 void
 checkLiForK2(int ** matrix, int k, int n) {
-	int i, j, matIndex1, matIndex2;
+	int i, j, matIndex1, rta, auxRow, auxCol, count, auxB;
    	i = 0;
    	while (i < n) {
    		j = 0;
@@ -80,9 +80,9 @@ checkLiForK2(int ** matrix, int k, int n) {
    					mat[0][matIndex1] = matrix[i][matIndex1];
    					mat[1][matIndex1] = matrix[j][matIndex1];
    				}
-   				int rta;
-              int auxRow = 0, auxCol = 0;
-              int count = 0;
+              auxRow = 0;
+              auxCol = 0;
+              count = 0;
               do {
                 rta = det2x2(mat);
                 if (rta == 0) {
@@ -93,7 +93,7 @@ checkLiForK2(int ** matrix, int k, int n) {
 						}
 					} 
 					mat[auxRow][auxCol]++;
-					int auxB = 0;			
+					auxB = 0;			
 					if (auxCol == 1) {
 						if (auxRow == 1) {
 							auxRow = 0;
@@ -119,7 +119,7 @@ checkLiForK2(int ** matrix, int k, int n) {
 
 void
 checkLiForK3(int ** matrix, int k, int n) {
-	int i, j, l, matIndex1, matIndex2;
+	int i, j, l, matIndex1, rta, auxRow, auxCol, count, auxB;
     i = 0;
     while (i < n) {
       j = 0;
@@ -141,9 +141,10 @@ checkLiForK3(int ** matrix, int k, int n) {
                 mat[1][matIndex1] = matrix[j][matIndex1];
                 mat[2][matIndex1] = matrix[l][matIndex1];
               }
-              int rta;
-              int auxRow = 0, auxCol = 0;
-              int count = 0;
+              
+              auxRow = 0;
+              auxCol = 0;
+              count = 0;
               do {
                 rta = detVertical3x3(mat);
                 if (rta == 0) {
@@ -154,7 +155,7 @@ checkLiForK3(int ** matrix, int k, int n) {
 						}
 					} 
 					mat[auxRow][auxCol]++;
-					int auxB = 0;			
+					auxB = 0;			
 					if (auxCol == 2) {
 						if (auxRow == 2) {
 							auxRow = 0;
@@ -188,7 +189,8 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k, in
 	int lastBytes, bBytes, i;
 	int amountOfLastBi = 0, amountOfBi = 0, p = 0, a = 0;
 	int amountOfAi = 255, amountOfLastAi = 255;
-	int * andB, auxAmount, auxAmountBytes, b, ai;
+	int * andB, * values, auxAmount, auxAmountBytes, b, ai;
+
 
 	if (EIGHT_BITS % k == 0) {
 		lastBytes = EIGHT_BITS / k;
@@ -211,7 +213,7 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k, in
 		*error = CALLOC_ERROR;
 		return NULL;
 	}
-	int * values = calloc(sizeof(int), k + 1);
+	values = calloc(sizeof(int), k + 1);
 	for (i = 0; i < k; i++) {
 		auxAmount = amountOfAi;
 		auxAmountBytes = bBytes;
@@ -231,8 +233,10 @@ getOutputBytes(BYTE * selectedSecretBytes, BYTE * selectedOutputBytes, int k, in
 
 int *
 calculateOutputValues(int * values, int * error, int k) {
-	int lastBytes, bBytes, i;
-	int p = 0;
+	int lastBytes, bBytes, i, length, * auxSelectedOutputBytes;
+	int p = 0, newP;
+	char * b_string, * valueForHast, * z;
+	unsigned char * md, * hash;
 
 	if (EIGHT_BITS % k == 0) {
 		lastBytes = EIGHT_BITS / k;
@@ -243,14 +247,14 @@ calculateOutputValues(int * values, int * error, int k) {
 	}
 
 	p = pow(2, lastBytes);
-	char * b_string = byte_to_binary(values[k]);
+	b_string = byte_to_binary(values[k]);
 
 	if (b_string == NULL) {
 		*error = CALLOC_ERROR;
 		return NULL;
 	}
-	int length = strlen(b_string);
-	int * auxSelectedOutputBytes = calloc(sizeof(int), k);
+	length = strlen(b_string);
+	auxSelectedOutputBytes = calloc(sizeof(int), k);
 	if (auxSelectedOutputBytes == NULL) {
 		*error = CALLOC_ERROR;
 		return NULL;
@@ -260,26 +264,23 @@ calculateOutputValues(int * values, int * error, int k) {
 	}
 	auxSelectedOutputBytes[k - 1] = (values[i] << (lastBytes + 1)) + getBi(b_string, lastBytes, i * bBytes);
 
-	char * valueForHast = calloc(sizeof(char), (EIGHT_BITS * k) + 1);
+	valueForHast = calloc(sizeof(char), (EIGHT_BITS * k) + 1);
 	for (i = 0; i < k - 1; i++) {
 		strcat(valueForHast, byte_to_binary(auxSelectedOutputBytes[i]));
 	}
-	char * z = byte_to_binary(auxSelectedOutputBytes[k-1]);
+	z = byte_to_binary(auxSelectedOutputBytes[k-1]);
 	strncat(valueForHast, z, EIGHT_BITS - lastBytes - 1);
 	strcat(valueForHast, z + EIGHT_BITS - lastBytes);
 	strcat(valueForHast, "0");
 
- 	unsigned char * md = malloc(MD5_DIGEST_LENGTH); 
+ 	md = malloc(MD5_DIGEST_LENGTH); 
  	if (md == NULL) {
  		*error = MALLOC_ERROR;
  		return NULL;
  	}
- 	unsigned char * hash = MD5(valueForHast, strlen(valueForHast), md);
+ 	hash = MD5(valueForHast, strlen(valueForHast), md);
 
-	int newP = xorFromHashWrapper(hash, error, length);
-	if (newP != 0) {
-		printf("newP: %d\n", newP);
-	}
+	newP = xorFromHashWrapper(hash, error, length);
 	if (*error != NO_ERROR) {
 		return NULL;
 	}
@@ -327,7 +328,6 @@ getBi(char * b_string, int bytes, int from) {
 
 int
 getRandom(int k) {
-  srand(time(NULL));
-  int randomnumber;
-    return rand() % k;
+	srand(time(NULL));
+  	return rand() % k;
 }
