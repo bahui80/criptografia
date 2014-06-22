@@ -1,4 +1,4 @@
-CFLAGS = -g -lcrypto 
+CFLAGS = -lcrypto 
 
 
 SECRET_SHARING=SecretSharing

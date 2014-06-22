@@ -1,9 +1,6 @@
 #include "../inc/provisorio.h"
 
-int globalS = 0;
-int globalX = 0;
-int globalY = 0;
-int globalZ = 0;
+int globalP = TRUE;
 
 Image
 recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) {
@@ -12,7 +9,6 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 	int amountOfLastBi = 0, amountOfBi = 0, p = 0, a = 0;
 	int amountOfAi = 255, amountOfLastAi = 255;
 	int * andB, auxAmount, auxAmountBytes, b, ai, shadowImagesIndex, index, sizeIndex;
-
 
 	if (8 % k == 0) {
 		lastBytes = 8 / k;
@@ -61,13 +57,20 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 		for (shadowImagesIndex = 0; shadowImagesIndex < k; shadowImagesIndex++) {
 			BYTE * image = getImage(shadowImages[shadowImagesIndex]);
 			int auxB = 0;
+			int * shadowVector = calloc(sizeof(int), k);
+			int vectorIndex = 0;
 			for (index = 0; index < k - 1; index++) {
 				if (k == 3) {
 					mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfAi) >> 3);
+					shadowVector[vectorIndex++] = (int) image[sizeIndex + index];
+					// printf("(int) image[sizeIndex + index]: %d\n", (int) image[sizeIndex + index]);
 				} else if (k == 2) {
 					mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfAi) >> 4);
+					shadowVector[vectorIndex++] = (int) image[sizeIndex + index];
 				}
 				auxB += ((int) image[sizeIndex + index]) & amountOfBi;
+				// printf("(int) image[sizeIndex + index]: %d\n", (int) image[sizeIndex + index]);
+				
 				if (k == 2) {
 					auxB = auxB << 4;
 				} else if (k == 3) {
@@ -80,49 +83,73 @@ recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error) 
 			}
 			if (k == 3) {
 				mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfLastAi) >> 3);
+				shadowVector[vectorIndex++] = (int) image[sizeIndex + index];
 			} else if (k == 2) {
 				mat[shadowImagesIndex][index] = ((((int) image[sizeIndex + index]) & amountOfLastAi) >> 5);
+				shadowVector[vectorIndex++] = (int) image[sizeIndex + index];
 			}
 			auxB += ((int) image[sizeIndex + index]) & amountOfLastBi;
-			// if (auxB >= 251) {
-			// 	printf("auxB: %d\n", auxB);
-			// }
 			mat[shadowImagesIndex][++index] = auxB % 251;
+			checkPValue(shadowVector, k, error);
 
 		}
-		// if (sizeIndex < 20) {
-		// 	printf("Matri<\n");
-		// 	for (i = 0; i < k; i++) {
-		// 		for (j = 0; j < k + 1; j++) {
-		// 			printf("%d - ", mat[i][j]);
-		// 		}
-		// 		printf("\n");
-		// 	}
-		// }
 		int * values;
 		if (k == 3) {
 			values = valuesFork3(mat, k, error);
 		} else if (k == 2) {
 			values = valuesFork2(mat, k, error);
 		}
-		// if (sizeIndex < 20) {
-		// 		printf("Values: x = %d y = %d deltaS = %d deltaX = %d  deltaY = %d\n", values[0], values[1], values[2], values[3], values[4]);
-		// }
+		
 		for(i = 0; i < k; i++) {
-			// printf("i + sizeIndex: %d values = %d\n", i + sizeIndex, values[i]);
-			// if (values[i] < 0) {
-			// 	// printf("jaja");
-			// 	values[i] = 250;
-			// }
 			setImageInIndex(originalImage, (char) values[i], i + sizeIndex);
 		}
 	}
-	printf("globalS: %d\n", globalS);
-	printf("globalX: %d\n", globalX);
-	printf("globalY: %d\n", globalY);
-	printf("globalZ: %d\n", globalZ);
+	if (globalP == FALSE) {
+		printf("Cuidado que la imagen pudo haber sido alterada\n");
+	}
 
 	return originalImage;	
+}
+
+void checkPValue(int * values, int k, int * error) {
+	int lastBytes, bBytes, i;
+	if (EIGHT_BITS % k == 0) {
+		lastBytes = EIGHT_BITS / k;
+		bBytes = lastBytes;
+	} else {
+		lastBytes = EIGHT_BITS % k;
+		bBytes = k;
+	}
+	int p = pow(2, lastBytes);
+	char * valueForHast = calloc(sizeof(char), (EIGHT_BITS * k) + 1);
+	for (i = 0; i < k - 1; i++) {
+		strcat(valueForHast, byte_to_binary(values[i]));
+	}
+	char * z = byte_to_binary(values[k-1]);
+	strncat(valueForHast, z, EIGHT_BITS - lastBytes - 1);
+	strcat(valueForHast, z + EIGHT_BITS - lastBytes);
+	strcat(valueForHast, "0");
+
+ 	unsigned char * md = malloc(MD5_DIGEST_LENGTH); 
+ 	if (md == NULL) {
+ 		*error = MALLOC_ERROR;
+ 		return;
+ 	}
+ 	unsigned char * hash = MD5(valueForHast, strlen(valueForHast), md);
+
+	int newP = xorFromHashWrapper(hash, error, 8);
+	if (*error != NO_ERROR) {
+		return;
+	}
+	int pValue = values[k-1] & p;
+
+	if (pValue == 0) {
+		if (newP != 0) {
+			globalP = FALSE;;
+		}
+	} else if (newP == 0) {
+		globalP = FALSE;
+	}
 }
 
 int *
@@ -166,9 +193,6 @@ valuesFork2(int ** mat, int k, int * error) {
 	}
 	int deltaY = det2x2(mat2);
 	values[1] = (deltaY * inverse) % 251;
-	// values[2] = deltaS;
-	// values[3] = deltaX;
-	// values[4] = deltaY;
 	if (deltaS == 0) {
 		globalS++;
 	} else if (deltaX == 0) {

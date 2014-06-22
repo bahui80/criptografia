@@ -20,5 +20,6 @@ int xorFromHash(char * hash);
 int * calculateOutputValues(int * values, int * error, int k);
 void checkLiForK3(int ** matrix, int k, int n);
 int getRandom(int k);
+void checkLiForK2(int ** matrix, int k, int n);
 
 #endif

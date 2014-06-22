@@ -153,26 +153,19 @@ main(int argc, char * argv[]) {
 		}
 		error = distributeInOneImage(secretImage, shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, n);
 		int i;
+		printf("Se crearon las siguientes imagenes con el secreto en ellas, en el directorio actual:\n");
 		for (i = 0; i < n; i++) {
 			char * files = calloc(sizeof(char), 20);
 			sprintf(files, "./shadows_%d.bmp", i);
+			printf("Sombra %d: %s\n", i, files);
 			saveImage(shadowImages[i], files, &error);
 		}
 	} else {
 		Image originalImage = recoverSecretImage(shadowImages, getFilesize(shadowImages[0]) - getOffset(shadowImages[0]), k, &error);
 		saveImage(originalImage, filename, &error);	
 	}
-	/**
-	 *	TODO: SE LLAMA AL METODO DISTRIBUTE O RECOVER SEGUN CORRESPONDA
-	 */		
 
-	/*checkImages(shadowImages, imagesRead); Uncomment if we want to test*/
-	
 	return EXIT_SUCCESS;	
-
-	/**
-	 *	TODO: Modularizar un poquito mas
-	 */
 }
 
 void

@@ -9,5 +9,6 @@
 int * valuesFork3(int ** mat, int k, int * error);
 Image recoverSecretImage(Image * shadowImages, int amountOfBytes, int k, int * error);
 int * valuesFork2(int ** mat, int k, int * error);
+void checkPValue(int * values, int k, int * error);
 
 #endif
